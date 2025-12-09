@@ -2,7 +2,9 @@ import React from 'react'
 
 const App= ()=> {
   return (
-    <div>SMA</div>
+    <div className=' text-primary text-3xl  ' >hi</div>
+    
+    
   )
 }
 
