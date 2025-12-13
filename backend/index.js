@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import dotenv, { config } from 'dotenv'
 import mongoose from 'mongoose'
+import cookieParser from 'cookie-parser'
 import authRoutes from "./routes/auth.route.js"
 
 dotenv.config()
@@ -27,6 +28,7 @@ app.use(
 //Middle wear to handle JSON obj in req body
 
 app.use(express.json())
+app.use(cookieParser())
 
 
 
