@@ -1,23 +1,24 @@
 import User from "../models/user.model.js"
 import bcryptjs from "bcryptjs"
+import { errorHandler } from "../utils/error.js"
 
 
-export const signUp = async(req,res)=>{
+export const signUp = async(req,res,next)=>{
   
   const {name,email,password,profileImageUrl,adminJoinCode} = req.body
 
   if(!name || !email || !password ||name==="" || email==="" || password===""){
-    res.status(400).json({message: "all fields are required"})
+    return next(errorHandler(400,"all fields are required"))
   }
 
   //cxehack if user already exists
   
   const isAlreadyExist = await User.findOne({email})
-  
+
   //We use async and await when we are doing something that takes time,
 
   if(isAlreadyExist){
-      return res.status(400).json({ success:false, message:"user already exsist" })
+      return next(errorHandler(400,"user already exsist"))
   }
 
   //check user role
@@ -43,7 +44,7 @@ export const signUp = async(req,res)=>{
     await newUser.save()
     res.json("account created succesfully")
   } catch (error) {
-    res.status(500).json({message: error.message})
+    next(error)
 
     
   }

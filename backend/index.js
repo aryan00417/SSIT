@@ -36,3 +36,18 @@ app.listen(3000,()=>{
 })
 
 app.use("/api/auth",authRoutes)
+
+//middleware for error handling
+app.use((err,req,res,next) =>{
+  const statusCode = err.statusCode || 500
+  const message = err.message || "internal server error"
+
+ res.status(statusCode).json(
+  {
+    succes: false,
+    statusCode,
+    message,
+  }
+ )
+}
+)
