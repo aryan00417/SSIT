@@ -1,5 +1,5 @@
 import express from 'express'
-import { signIn, signUp,  userProfile } from '../controller/auth.controller.js'
+import { signIn, signUp,  updateProfile,  userProfile } from '../controller/auth.controller.js'
 import { verifyToken } from '../utils/verifyUser.js'
  const router = express.Router()
 
@@ -7,5 +7,6 @@ import { verifyToken } from '../utils/verifyUser.js'
  router.post("/sign-in",signIn)
 
  router.get("/user-profile",verifyToken,userProfile)
+ router.put("/update-profile",verifyToken,updateProfile)
 
  export default router
