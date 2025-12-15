@@ -69,17 +69,30 @@ export const signIn = async(req,res,next)=>{
       return next(errorHandler(400,"enter valid credentials"))
     }
 
-    const token  = jwt.sign({id: validUser._id}, process.env.JWT_SECRET)
+    const token  = jwt.sign({id: validUser._id}, process.env.JWT_SECRET) //creating a token
 
-    const {password:pass,...rest } = validUser._doc
+    const {password:pass,...rest } = validUser._doc //storing user values in rest , except passworrd
 
-    res.status(200).cookie("access_token",token,{httpOnly: true}).json(rest)
+    res.status(200).cookie("access_token",token,{httpOnly: true}).json(rest) //storing the token in cokkie and returning rest the user values
     
   } catch (error) {
     next(error)
   }
 }
 
+export const userProfile = async(req,res,next) =>{
+  try {
+    const user = await User.findById(req.user.id)
+
+    if(!user){
+      return next(errorHandler(404,"user not found"))
+    }
+    const {password:pass,...rest} = user._doc
+    res.status(200).json(rest)
+  } catch (error) {
+    return next(error)  
+  }
+}
 
 
 //A file that contains the logic of what should happen when a user signs up, logs in, logs out, etc.
