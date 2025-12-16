@@ -118,4 +118,20 @@ export const updateProfile = async(req,res,next) =>{
   }
 }
 
+export const uploadImage = async(req,res,next) =>{
+  try {
+    if(!req.file){
+      return next(errorHandler(400,"no file has been uploaded"))
+    }
+
+    const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
+
+    res.status(200).json({ imageUrl })
+  } catch (error) {
+    next(error)
+  }
+}
+
+
+
 //A file that contains the logic of what should happen when a user signs up, logs in, logs out, etc.
