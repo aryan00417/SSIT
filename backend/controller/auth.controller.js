@@ -69,9 +69,10 @@ export const signIn = async(req,res,next)=>{
       return next(errorHandler(400,"enter valid credentials"))
     }
 
-    const token  = jwt.sign({id: validUser._id}, process.env.JWT_SECRET) //creating a token
+    const token  = jwt.sign({id: validUser._id,role: validUser.role}, process.env.JWT_SECRET) //creating a token
 
     const {password:pass,...rest } = validUser._doc //storing user values in rest , except passworrd
+    
 
     res.status(200).cookie("access_token",token,{httpOnly: true}).json(rest) //storing the token in cokkie and returning rest the user values
     

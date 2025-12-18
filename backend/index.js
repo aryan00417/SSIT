@@ -4,6 +4,7 @@ import dotenv, { config } from 'dotenv'
 import mongoose from 'mongoose'
 import cookieParser from 'cookie-parser'
 import authRoutes from "./routes/auth.route.js"
+import userRoutes from "./routes/user.route.js"
 
 dotenv.config()
 
@@ -37,7 +38,9 @@ app.listen(3000,()=>{
   console.log("the server is running at port 3000!")
 })
 
+//Whenever a request starts with /api/auth, send it to authRoutes
 app.use("/api/auth",authRoutes)
+app.use("/api/user",userRoutes)
 
 //middleware for error handling
 app.use((err,req,res,next) =>{
