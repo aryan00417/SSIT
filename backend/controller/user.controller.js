@@ -5,7 +5,7 @@ import { errorHandler } from "../utils/error.js"
 export const getUsers= async (req,res,next)=>{
   try {
     const users = await User.find({role:"user"}).select("-password")
-    const userWithTaskCounts = Promise.all(
+    const userWithTaskCounts = await Promise.all(
       users.map(async(user)=>{
 
         //Counts how many tasks: Are assigned to this user Have status "Pending"
