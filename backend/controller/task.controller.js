@@ -9,7 +9,7 @@ export const createTask = async (req, res, next) => {
       priority,
       dueDate,
       assignedTo,
-      attachemnts,
+      attachments,
       todoCheckList,
     } = req.body;
 
@@ -23,10 +23,11 @@ export const createTask = async (req, res, next) => {
       priority,
       dueDate,
       assignedTo,
-      attachemnts,
+      attachments,
       todoCheckList,
       createdBy: req.user.id,
     })
+    
     res.status(201).json({message: "Task created succesfully",task})
   } catch (error) {
     next(error);
@@ -113,4 +114,33 @@ export const getTaskById =async(req,res,next)=>{
   } catch (error) {
    next(error) 
   }
+}
+
+export const updateTask = async(req,res,next)=>{
+   try {
+    const task  = await Task.findById(req.params.id)
+    if(!task){
+      return next(errorHandler(404,"Task not found"))
+    }
+    task.title = req.body.title || task.title
+    task.description = req.body.description || task.description
+    task.priority  = req.body.priority || task.priority
+    task.dueDate  = req.body.dueDate ||task.dueDate
+    task.todoCheckList  =req.body.todoCheckList || task.todoCheckList
+    task.attachments = req.body.attachments || task.attachments
+
+    if(req.body.assignedTo){
+      if(!Array.isArray(req.body.assignedTo)){
+        return next(errorHandler(400,"AssignedTo must be an Array"))
+      }
+      task.assignedTo = req.body.assignedTo 
+    }
+
+    const updatedTask = await task.save()
+
+    return res.status(200).json({updatedTask,message:"the task has been updated succesfully"})
+
+   } catch (error) {
+    next(error)
+   }
 }
