@@ -233,3 +233,77 @@ if (!isAssigned && req.user.role !== "admin") {
     next(error)
   }
 }
+
+export const getDashboardData = async(req,res,next)=>{
+  try {
+
+    //Fetch statistics 
+    const totalTasks = await Task.countDocuments()
+    const pendingTasks = await Task.countDocuments({status: "Pending"})
+    const completedTasks = await Task.countDocuments({status: "Completed"})
+    const overDueTask = await Task.countDocuments({
+      status: {$ne : "Completed"},
+      dueDate: {$lt: new Date()}
+    })
+
+    const taskStatuses = ["Pending","In Progress","Completed"]
+
+    //this make an array , with the id and count
+    const taskDistributionRaw = await Task.aggregate([
+      {
+        $group:{
+          _id: "$status",
+          count: {$sum:1},
+        },
+      },
+    ])
+
+    //converting the array to object , pending : 5 like this, doing this using reduce method
+  const taskDistribution = taskStatuses.reduce((acc,status)=>{
+    const fromattedKey = status.replace(/\s+/g,"") //remove spaces for response keys
+
+    acc[fromattedKey] = taskDistributionRaw.find((item)=>item._id === status)?.count || 0 
+
+    return acc //acc just collects the obj with count 
+  },{})
+
+  taskDistribution["ALL"] = totalTasks
+const taskPriorities = ["Low", "Medium", "High"];
+
+  const taskPrioritiesLevelRaw = await Task.aggregate([
+    {
+      $group: {
+        _id: "$priority",
+        count: {$sum:1},
+      },
+    },
+  ])
+
+  const taskPrioritiesLevel = taskPriorities.reduce((acc,priority)=>{
+    acc[priority] = taskPrioritiesLevelRaw.find((item)=> item._id === priority)?.count || 0
+
+    return acc
+  },{})
+
+  //fetch recent 10 task 
+
+  const recentTask = await Task.find().sort({createdAt: -1 }).limit(10).select("title status priority dueDate createdAt")
+  
+  res.status(200).json({
+    statistics : {
+      totalTasks,
+      pendingTasks,
+      completedTasks,
+      overDueTask
+    },
+    charts: {
+      taskDistribution,
+      taskPrioritiesLevel
+    },
+    recentTask,
+  })
+
+  } catch (error) {
+    next(error)
+  }
+}
