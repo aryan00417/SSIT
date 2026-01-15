@@ -38,9 +38,11 @@ export const createTask = async (req, res, next) => {
 };
 
 //this for the dashboard contaning div to indicate the progress of tasks
+//  This API fetches tasks from the database,filters them by status (if provided), restricts data based on user role (admin vs normal user), adds extra computed info (completed checklist count), and finally returns tasks + a summary of task statuses.
 export const getTask = async (req, res, next) => {
   try {
     const { status } = req.query;
+
     //filter here is an obj that is gonna store the status of task
     const filter = {};
     if (status) {
